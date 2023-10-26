@@ -1,190 +1,21 @@
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: "2010-09-09"
 
 Parameters:
-
   KeyName:
     Type: String
-    Description: Keyname for the keypair that Qwiklab will use
+    Description: Keyname for the keypair
+    Default: lab-key-pair
 
-  AmazonLinuxAMIID:
-    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+  AMZN2023LinuxAMIId:
+    Type : AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
 
+  UserPassword:
+    Description: "User password."
+    Type: String
+    Default: Passw0rd!
+
 Resources:
-
-###########
-# VPC with Internet Gateway for Work/Bastion Instance
-###########
-
-  WorkVPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: 10.0.0.0/16
-      EnableDnsSupport: true
-      EnableDnsHostnames: true
-      Tags:
-        - Key: Name
-          Value: Work VPC
-
-  WorkIGW:
-    Type: AWS::EC2::InternetGateway
-    Properties:
-      Tags:
-        - Key: Name
-          Value: Work IGW
-
-  WorkVPCtoIGWConnection:
-    Type: AWS::EC2::VPCGatewayAttachment
-    DependsOn:
-      - WorkIGW
-      - WorkVPC
-    Properties:
-      InternetGatewayId: !Ref WorkIGW
-      VpcId: !Ref WorkVPC
-
-###########
-# Public Route Table for Work/Bastion Instance
-###########
-
-  WorkPublicRouteTable:
-    Type: AWS::EC2::RouteTable
-    DependsOn: WorkVPC
-    Properties:
-      VpcId: !Ref WorkVPC
-      Tags:
-        - Key: Name
-          Value: Work Public Route Table
-
-  WorkPublicRoute:
-    Type: AWS::EC2::Route
-    DependsOn:
-      - WorkPublicRouteTable
-      - WorkVPCtoIGWConnection
-    Properties:
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref WorkIGW
-      RouteTableId: !Ref WorkPublicRouteTable
-
-###########
-# Public Subnet for Work/Bastion Instance
-###########
-
-  WorkPublicSubnet:
-    Type: AWS::EC2::Subnet
-    DependsOn: WorkVPC
-    Properties:
-      VpcId: !Ref WorkVPC
-      MapPublicIpOnLaunch: true
-      CidrBlock: 10.0.0.0/24
-      AvailabilityZone: !Select
-        - 0
-        - !GetAZs
-          Ref: AWS::Region
-      Tags:
-        - Key: Name
-          Value: Work Public Subnet
-
-  WorkPublicRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    DependsOn:
-      - WorkPublicRouteTable
-      - WorkPublicSubnet
-    Properties:
-      RouteTableId: !Ref WorkPublicRouteTable
-      SubnetId: !Ref WorkPublicSubnet
-
-###########
-# IAM Role for Work/Bastion Instance
-###########
-
-  EC2InstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Path: /
-      Roles: [!Ref EC2InstanceRole]
-      InstanceProfileName: Work-Role
-
-  EC2InstanceRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: EC2InstanceRole
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - ec2.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      Path: /
-      Policies:
-        - PolicyName: root
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action: ssm:*
-                Resource: 'arn:aws:ssm:*:*:parameter/work/*'
-
-
-
-###########
-# Security Group WorkEc2SecurityGroup
-###########
-
-  WorkEc2SecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: VPC Security Group
-      GroupName: WorkEc2SecurityGroup
-      SecurityGroupIngress:
-        - CidrIp: 0.0.0.0/0
-          IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-      VpcId: !Ref WorkVPC
-
-###########
-# EC2 Work Instance
-###########
-        
-# Creates a Bastion instance.
-  BastionHost:
-    Type: AWS::EC2::Instance
-    DependsOn:
-      - WorkPublicRouteTableAssociation
-      - EC2InstanceProfile
-    Properties:
-      ImageId: !Ref AmazonLinuxAMIID
-      InstanceType: t2.micro
-      KeyName: !Ref KeyName
-      NetworkInterfaces:
-        - AssociatePublicIpAddress: true  # Optional as the subnet already has a public IP assigned.
-          DeviceIndex: 0
-          GroupSet:
-            - Ref: WorkEc2SecurityGroup
-          SubnetId: !Ref 'WorkPublicSubnet'
-      IamInstanceProfile: !Ref EC2InstanceProfile
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash -ex
-          yum update -y
-          # This sample installs AWS CLIv2
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          ./aws/install
-          rm -rf awscliv2.zip
-          rm -rf aws
-          alias aws=/usr/local/bin/aws
-      Tags:
-        -
-          Key: Name
-          Value: Bastion Host
-
-#########
-# Lab Resources
-#########
   VPC:
     Type: 'AWS::EC2::VPC'
     Properties:
@@ -195,8 +26,6 @@ Resources:
 
   InternetGateway:
     Type: 'AWS::EC2::InternetGateway'
-    DependsOn:
-      - VPC
 
   AttachGateway:
     Type: 'AWS::EC2::VPCGatewayAttachment'
@@ -259,16 +88,13 @@ Resources:
       Tags:
         - Key: Name
           Value: Public Route Table
-          
+
   PublicRoute:
     Type: 'AWS::EC2::Route'
     Properties:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
-    DependsOn:
-      - VPC
-      - AttachGateway
 
   PublicSubnet1RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
@@ -305,13 +131,13 @@ Resources:
   WebInstance:
     Type: 'AWS::EC2::Instance'
     Properties:
-      ImageId: !Ref AmazonLinuxAMIID
+      ImageId: !Ref AMZN2023LinuxAMIId
       KeyName: !Ref KeyName
       InstanceType: t2.micro
       NetworkInterfaces:
         - DeviceIndex: '0'
           AssociatePublicIpAddress: 'true'
-          SubnetId: !Ref PublicSubnet2
+          SubnetId: !Ref PublicSubnet1
           GroupSet:
             - !Ref WebSecurityGroup
       SourceDestCheck: 'false'
@@ -328,8 +154,8 @@ Resources:
           /usr/bin/systemctl enable httpd
           /usr/bin/systemctl start httpd
           cd /var/www/html
-          wget https://aws-tc-largeobjects.s3.amazonaws.com/CUR-TF-100-ACCLFO-2/lab5-rds/lab-app-php7.zip
-          unzip lab-app-php7.zip -d /var/www/html/
+          wget https://aws-tc-largeobjects.s3-us-west-2.amazonaws.com/CUR-TF-100-ACCLFO-2/lab6-scaling/lab-app.zip
+          unzip lab-app.zip -d /var/www/html/
           chown apache:root /var/www/html/rds.conf.php
 
   WebSecurityGroup:
@@ -350,8 +176,6 @@ Resources:
           FromPort: '22'
           ToPort: '22'
           CidrIp: 0.0.0.0/0
-
-  # NAT Gateway
 
   NATGateway:
     Type: AWS::EC2::NatGateway
@@ -375,104 +199,202 @@ Resources:
       NatGatewayId:
         Ref: NATGateway
 
+  DBSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: DB Security Group
+      GroupName: DB Security Group
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: DB Security Group
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '3306'
+          ToPort: '3306'
+          SourceSecurityGroupId: !Ref WebSecurityGroup
+
+  DBsubnetGroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupDescription: Lab DB Subnet Group
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+
+  #needed for CLI version of the lab
   IAMUser:
     Type: 'AWS::IAM::User'
     Properties:
       UserName: awsstudent
+      LoginProfile:
+        Password: !Ref UserPassword
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+        #- !Sub arn:aws:iam::${AWS::AccountId}:policy/IAMPolicy 
 
+  #needed for CLI version of the lab
   IAMPolicy:
     Type: 'AWS::IAM::ManagedPolicy'
-    DependsOn: IAMUser
+    DependsOn:
+        - IAMUser
+        - LabRole
     Properties:
+      ManagedPolicyName: IAMPolicy
       PolicyDocument:
         Version: 2012-10-17
         Statement: [{
-            "Sid": "Lab2",
-            "Action": [
-                "cloudformation:List*",
-                "cloudformation:Describe*",
-                "cloudformation:Detect*",
-                "cloudformation:Estimate*",
-                "cloudformation:Get*",
-                "iam:Get*",
-                "iam:List*",
-                "cloudwatch:List*",
-                "cloudwatch:Describe*",
-                "cloudwatch:Get*",
-                "cloudtrail:GetTrailStatus",
-                "cloudtrail:DescribeTrails",
-                "cloudtrail:LookupEvents",
-                "cloudtrail:ListTags",
-                "cloudtrail:ListPublicKeys",
-                "cloudtrail:GetEventSelectors",
-                "ec2:*Address*",
-                "ec2:Cancel*",
-                "ec2:Describe*",
-                "ec2:*Gateway",
-                "ec2:Get*",
-                "ec2:*Image*",
-                "ec2:*Network*",
-                "ec2:*Route*",
-                "ec2:*SecurityGroup*",
-                "ec2:*Snapshot*",
-                "ec2:*Subnet*",
-                "ec2:*Vpc*",
-                "ec2:*Vpn*",
-                "ec2:DeleteFleets",
-                "ec2:ResetEbsDefaultKmsKeyId",
-                "ec2:ReportInstanceStatus",
-                "ec2:ImportKeyPair",
-                "ec2:StopInstances",
-                "ec2:ProvisionByoipCidr",
-                "ec2:WithdrawByoipCidr",
-                "ec2:AssociateDhcpOptions",
-                "ec2:ConfirmProductInstance",
-                "ec2:ConfirmProductInstance",
-                "ec2:ModifyFpgaImageAttribute",
-                "ec2:EnableEbsEncryptionByDefault",
-                "ec2:SendDiagnosticInterrupt",
-                "ec2:AssociateIamInstanceProfile",
-                "ec2:ReplaceIamInstanceProfileAssociation",
-                "ec2:CreateDhcpOptions",
-                "ec2:DeleteDhcpOptions",
-                "ec2:CreateKeyPair",
-                "ec2:DeleteKeyPair",
-                "ec2:BundleInstance",
-                "ec2:CreateTags",
-                "ec2:DisassociateIamInstanceProfile",
-                "ec2:AttachVolume",
-                "ec2:CreateInstanceExportTask",
-                "ec2:MonitorInstances",
-                "ec2:UnmonitorInstances",
-                "ec2:DetachVolume",
-                "ec2:DeleteVolume",
-                "ec2:DeleteLaunchTemplate*",
-                "ec2:CreateFlowLogs",
-                "ec2:DeleteFlowLogs",
-                "ec2:ModifyIdentityIdFormat",
-                "ec2:ModifyIdFormat",
-                "ec2:AdvertiseByoipCidr",
-                "ec2:DeprovisionByoipCidr",
-                "ec2:DeleteTags",
-                "ec2:TerminateInstances",
-                "ec2:DisableEbsEncryptionByDefault",
-                "ec2:ModifyEbsDefaultKmsKeyId",
-                "rds:*",
-                "s3:ListAllMyBuckets",
-                "s3:GetObject",
-                "s3:GetBucketLocation",
-                "kms:List*",
-                "lambda:ListFunctions"
-            ],
+            "Sid": "AllowAllActions",
             "Effect": "Allow",
-            "Resource": "*"
+            "Action": [
+                "autoscaling:AttachInstances",
+                "autoscaling:DetachInstances",
+                "autoscaling:SetDesiredCapacity",
+                "autoscaling:SetInstanceHealth",
+                "autoscaling:SetInstanceProtection",
+                "autoscaling:*AutoScalingGroup",
+                "autoscaling:*Configuration",
+                "autoscaling:*Hook",
+                "autoscaling:*Lifecycle*",
+                "autoscaling:*LoadBalancer*",
+                "autoscaling:*Metrics*",
+                "autoscaling:*Policy",
+                "autoscaling:*Processes",
+                "autoscaling:*Standby",
+                "autoscaling:*Scheduled*",
+                "autoscaling:*Tags",
+                "cloudtrail:LookupEvents",
+                "ec2:Accept*",
+                "ec2:Advertise*",
+                "ec2:Allocate*",
+                "ec2:Apply*",
+                "ec2:Assign*",
+                "ec2:Associate*",
+                "ec2:Attach*",
+                "ec2:Authorize*",
+                "ec2:Bundle*",
+                "ec2:Cancel*",
+                "ec2:Confirm*",
+                "ec2:Copy*",
+                "ec2:Create*",
+                "ec2:Delete*",
+                "ec2:Deprovision*",
+                "ec2:Deregister*",
+                "ec2:Detach*",
+                "ec2:Disable*",
+                "ec2:Disassociate*",
+                "ec2:Enable*",
+                "ec2:Export*",
+                "ec2:Import*",
+                "ec2:Modify*",
+                "ec2:Monitor*",
+                "ec2:Move*",
+                "ec2:Pause*",
+                "ec2:Provision*",
+                "ec2:Purchase*",
+                "ec2:Put*",
+                "ec2:Reboot*",
+                "ec2:Register*",
+                "ec2:Reject*",
+                "ec2:Release*",
+                "ec2:Replace*",
+                "ec2:Report*",
+                "ec2:Request*",
+                "ec2:Reset*",
+                "ec2:Restore*",
+                "ec2:Revoke*",
+                "ec2:Run*",
+                "ec2:Search*",
+                "ec2:Send*",
+                "ec2:Start*",
+                "ec2:Stop*",
+                "ec2:Terminate*",
+                "ec2:Unassign*",
+                "ec2:Unmonitor*",
+                "ec2:Update*",
+                "ec2:Withdraw*",
+                "ec2-instance-connect:Send*",
+                "elasticloadbalancing:AddListenerCertificates",
+                "elasticloadbalancing:CreateListener",
+                "elasticloadbalancing:CreateLoadBalancer",
+                "elasticloadbalancing:CreateRule",
+                "elasticloadbalancing:DeleteListener",
+                "elasticloadbalancing:DeleteLoadBalancer",
+                "elasticloadbalancing:DeleteRule",
+                "elasticloadbalancing:DeregisterTargets",
+                "elasticloadbalancing:Modify*",
+                "elasticloadbalancing:RegisterTargets",
+                "elasticloadbalancing:RemoveListenerCertificates",
+                "elasticloadbalancing:Set*",
+                "elasticloadbalancing:*TargetGroup",
+                "elasticloadbalancing:*Tags",
+                "events:TestEventPattern",
+                "logs:StartQuery",
+                "logs:StopQuery",
+                "logs:TestMetricFilter",
+                "logs:FilterLogEvents",
+                "resource-groups:SearchResources",
+                "ssm:CancelCommand",
+                "ssm:PutInventory",
+                "ssm:PutComplianceItems",
+                "ssm:PutConfigurePackageResult",
+                "ssm:ResumeSession",
+                "ssm:SendCommand",
+                "ssm:StartAutomationExecution",
+                "ssm:StartSession",
+                "ssm:TerminateSession",
+                "ssm:UpdateAssociationStatus",
+                "ssm:UpdateInstanceAssociationStatus",
+                "ssm:UpdateInstanceInformation",
+                "sns:AddPermission",
+                "sns:CheckIfPhoneNumberIsOptedOut",
+                "sns:ConfirmSubscription",
+                "sns:Create*",
+                "sns:Delete*",
+                "sns:OptInPhoneNumber",
+                "sns:Publish",
+                "sns:RemovePermission",
+                "sns:Set*",
+                "sns:*Subscribe",
+                "sns:TagResource",
+                "sns:UntagResource",
+                "tag:*"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestedRegion": [
+                        "us-east-1",
+                        "us-west-2"
+                    ]
+                }
+            }
         },
-
         {
-            "Sid": "RDSRoleAndPolicies",
+            "Sid": "RestrictASGInstanceTypeAndNo",
+            "Effect": "Allow",
+            "Action": [
+                "autoscaling:UpdateAutoScalingGroup",
+                "autoscaling:CreateAutoScalingGroup"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "NumericGreaterThanIfExists": {
+                    "autoscaling:MaxSize": "6"
+                },
+                "ForAnyValue:StringNotLikeIfExists": {
+                    "autoscaling:InstanceTypes": [
+                        "*.micro"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "ServiceLinkedRoleAndPolicies",
             "Effect": "Allow",
             "Action": [
                 "iam:AttachRolePolicy",
+                "iam:CreateInstanceProfile",
                 "iam:CreateServiceLinkedRole",
                 "iam:DetachRolePolicy",
                 "iam:PassRole"
@@ -480,14 +402,216 @@ Resources:
             "Resource": "*",
             "Condition": {
                 "StringLikeIfExists": {
-                    "iam:AWSServiceName": "rds.amazonaws.com",
-                    "iam:PassedToService": "rds.amazonaws.com"
+                    "iam:PassedToService": [
+                        "elasticloadbalancing.amazonaws.com",
+                        "autoscaling.amazonaws.com"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "IamAllowServiceLinkedRoleCreation",
+            "Effect": "Allow",
+            "Action": "iam:CreateServiceLinkedRole",
+            "Resource": "arn:aws:iam::*:role/aws-service-role/*"
+        },
+        {
+            "Sid": "AllServicesDenyNoConds",
+            "Effect": "Deny",
+            "Action": [
+                "ec2:*Fpga*",
+                "ec2:*Spot*",
+                "ec2:*ReservedInstances*",
+                "ec2:*Scheduled*",
+                "ec2:*Purchase*",
+                "ec2:EnableFastSnapshotRestores",
+                "rds:Purchase*",
+                "s3:*ObjectLegalHold",
+                "s3:*ObjectRetention",
+                "s3:PutBucketObjectLockConfiguration"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "AsgRestrict",
+            "Action": [
+                "autoscaling:CreateLaunchConfiguration"
+            ],
+            "Effect": "Deny",
+            "Resource": "*",
+            "Condition": {
+                "ForAnyValue:StringNotLikeIfExists": {
+                    "autoscaling:InstanceType": [
+                        "*.micro"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "ec2NoSpot",
+            "Effect": "Deny",
+            "Action": "ec2:RunInstances",
+            "Resource": "*",
+            "Condition": {
+                "ForAnyValue:StringEqualsIfExists": {
+                    "ec2:InstanceMarketType": "spot"
+                }
+            }
+        },
+        {
+            "Sid": "Ec2RestrictPlacementGroup",
+            "Action": "ec2:*Instance*",
+            "Effect": "Deny",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "ec2:PlacementGroupStrategy": "cluster"
+                }
+            }
+        },
+        {
+            "Sid": "Ec2DenyTenancy",
+            "Action": "ec2:*Instance*",
+            "Effect": "Deny",
+            "Resource": "arn:aws:ec2:*:*:instance/*",
+            "Condition": {
+                "StringNotLikeIfExists": {
+                    "ec2:Tenancy": "default"
+                }
+            }
+        },
+        {
+            "Sid": "Ec2RestrictInstanceTypes",
+            "Action": [
+                "ec2:RunInstances",
+                "ec2:StartInstances"
+            ],
+            "Effect": "Deny",
+            "Resource": "arn:aws:ec2:*:*:instance/*",
+            "Condition": {
+                "ForAnyValue:StringNotLikeIfExists": {
+                    "ec2:InstanceType": [
+                        "*.micro"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "Ec2RestrictLargeVolumes",
+            "Action": [
+                "ec2:RunInstances",
+                "ec2:CreateVolume"
+            ],
+            "Effect": "Deny",
+            "Resource": "arn:aws:ec2:*:*:volume/*",
+            "Condition": {
+                "NumericGreaterThanIfExists": {
+                    "ec2:VolumeSize": "51"
+                }
+            }
+        },
+        {
+            "Sid": "Ec2RestrictPIOPSVolumes",
+            "Action": [
+                "ec2:RunInstances",
+                "ec2:CreateVolume"
+            ],
+            "Effect": "Deny",
+            "Resource": "arn:aws:ec2:*:*:volume/*",
+            "Condition": {
+                "StringNotLikeIfExists": {
+                    "ec2:VolumeType": [
+                        "gp2",
+                        "gp3",
+                        "sc1",
+                        "standard"
+                    ]
                 }
             }
         }]
-      ManagedPolicyName: lab_policy
-      Users:
-        - awsstudent
+      Roles:
+        - !Ref LabRole
+
+  #needed for CLI version of the lab
+  LabRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "LabRole"
+      Path: "/"
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+  
+  #needed for CLI version of the lab
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    DependsOn: LabRole
+    Properties:
+      InstanceProfileName: "EC2InstanceProfile"
+      Path: "/"
+      Roles:
+      - !Ref LabRole
+
+  #needed for CLI version of the lab
+  BastionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enables SSH access.
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: '0.0.0.0/0'
+      Tags:
+        - Key: Name
+          Value: BastionSecurityGroup
+
+  #needed for CLI version of the lab  
+  BastionHost:
+    Type: AWS::EC2::Instance
+    DependsOn:
+      - PublicSubnet1RouteTableAssociation
+      - EC2InstanceProfile
+    Properties:
+      ImageId: !Ref AMZN2023LinuxAMIId
+      InstanceType: t2.micro
+      KeyName: !Ref KeyName
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true  # Optional as the subnet already has a public IP assigned.
+          DeviceIndex: 0
+          GroupSet:
+            - Ref: BastionSecurityGroup
+          SubnetId: !Ref 'PublicSubnet1'
+      IamInstanceProfile: !Ref EC2InstanceProfile
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -ex
+          yum update -y
+          # This sample installs AWS CLIv2
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          ./aws/install
+          rm -rf awscliv2.zip
+          rm -rf aws
+          alias aws=/usr/local/bin/aws
+      Tags:
+        -
+          Key: Name
+          Value: Bastion Host
+  
+
+
+  #needed for CLI version of the lab
   IAMUserAccessKey:
     Type: 'AWS::IAM::AccessKey'
     DependsOn: IAMUser
@@ -502,20 +626,27 @@ Outputs:
       - PublicIp
     Description: Public IP address of Web Server
 
-  AccessKey:
-    Value:
-      Ref: IAMUserAccessKey
-  SecretKey:
-    Value:
-      'Fn::GetAtt':
-        - IAMUserAccessKey
-        - SecretAccessKey
+  #needed for CLI version of the lab
+  UserAccessSecretKey:
+    Description: "User access and secret keys."
+    Value: !Join
+      - ''
+      - - "Access Key: "
+        - !Ref IAMUserAccessKey
+        - " "
+        - "Secret Access Key: "
+        - 'Fn::GetAtt':
+          - IAMUserAccessKey
+          - SecretAccessKey
 
+  #needed for CLI version of the lab
   BastionHost:
     Description: BastionHost server's public IP address.
     Value: !GetAtt
       - BastionHost
       - PublicIp
+
+  #needed for CLI version of the lab
   Region:
-    Description: The region for the lab. 
+    Description: The region for the lab.
     Value: !Ref "AWS::Region"

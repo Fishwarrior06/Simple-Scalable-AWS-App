@@ -223,17 +223,6 @@ Resources:
         - !Ref PrivateSubnet2
 
   #needed for CLI version of the lab
-  IAMUser:
-    Type: 'AWS::IAM::User'
-    Properties:
-      UserName: awsstudent
-      LoginProfile:
-        Password: !Ref UserPassword
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/ReadOnlyAccess
-        #- !Sub arn:aws:iam::${AWS::AccountId}:policy/IAMPolicy 
-
-  #needed for CLI version of the lab
   IAMPolicy:
     Type: 'AWS::IAM::ManagedPolicy'
     DependsOn:
@@ -532,25 +521,6 @@ Resources:
       Roles:
         - !Ref LabRole
 
-  #needed for CLI version of the lab
-  LabRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: "LabRole"
-      Path: "/"
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - ec2.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/ReadOnlyAccess
-        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
-  
   #needed for CLI version of the lab
   EC2InstanceProfile:
     Type: AWS::IAM::InstanceProfile

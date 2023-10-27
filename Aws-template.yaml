@@ -209,7 +209,7 @@ Outputs:
       - WebInstance
       - PublicIp
     Description: Public IP address of Web Server
-RDSDatabase:
+MyDB:
   Type: "AWS::RDS::DBInstance"
   Properties:
     AllocatedStorage: 20

@@ -72,6 +72,14 @@ Resources:
       Tags:
         - Key: Name
           Value: Private Subnet 2
+  RDSSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupName: DB-Subnet-Group
+      DBSubnetGroupDescription: DB Subnet Group
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
   PublicRouteTable:
     Type: 'AWS::EC2::RouteTable'
     Properties:
@@ -201,3 +209,27 @@ Outputs:
       - WebInstance
       - PublicIp
     Description: Public IP address of Web Server
+RDSDatabase:
+  Type: "AWS::RDS::DBInstance"
+  Properties:
+    AllocatedStorage: 20
+    AutoMinorVersionUpgrade: true
+    AvailabilityZone: !Select [0, !GetAZs '']
+    BackupRetentionPeriod: 0  # Disabling automatic backups
+    CopyTagsToSnapshot: false
+    DBInstanceClass: db.t3.micro
+    DBInstanceIdentifier: lab-db
+    DBName: lab
+    Engine: mysql
+    EngineVersion: 8.0
+    MasterUsername: main
+    MasterUserPassword: lab-password
+    MultiAZ: true
+    PubliclyAccessible: false
+    StorageType: gp2
+    VPCSecurityGroups:
+      - !Ref DBSecurityGroup
+    DBSubnetGroupName: !Ref RDSSubnetGroup
+    Tags:
+      - Key: Name
+        Value: lab-db

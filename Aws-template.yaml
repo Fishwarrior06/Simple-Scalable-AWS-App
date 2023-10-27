@@ -8,8 +8,9 @@ Parameters:
   KeyName:
     Description: Name of an existing EC2 KeyPair
     Type: String 
-  AmazonLinuxAMIID: ami-067d1e60475437da2
+  AmazonLinuxAMIID:
     Type: String
+    Default: ami-067d1e60475437da2
 Resources:
   VPC:
     Type: 'AWS::EC2::VPC'

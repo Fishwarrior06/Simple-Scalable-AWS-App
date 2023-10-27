@@ -203,30 +203,6 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId:
         Ref: NATGateway
-  DBInstance:
-    Type: "AWS::RDS::DBInstance"
-    Properties:
-      AllocatedStorage: 20
-      AutoMinorVersionUpgrade: true
-      AvailabilityZone: !Select [0, !GetAZs '']
-      BackupRetentionPeriod: 0  # Disabling automatic backups
-      CopyTagsToSnapshot: false
-      DBInstanceClass: db.t3.micro
-      DBInstanceIdentifier: lab-db
-      DBName: lab
-      Engine: mysql
-      EngineVersion: 8.0
-      MasterUsername: main
-      MasterUserPassword: lab-password
-      MultiAZ: true
-      PubliclyAccessible: false
-      StorageType: gp2
-      VPCSecurityGroups:
-        - !Ref DBSecurityGroup
-      DBSubnetGroupName: !Ref RDSSubnetGroup
-      Tags:
-        - Key: Name
-          Value: lab-db
 Outputs:
   WebServer:
     Value: !GetAtt

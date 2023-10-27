@@ -167,7 +167,7 @@ Resources:
     Properties:
       GroupDescription: Permit access from Web Security Group
       GroupName: DB Security Group
-      VpcId: !ref VPC
+      VpcId: !Ref VPC
       Tags:
         - Key: Name
           Value: DB Security Group

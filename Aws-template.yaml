@@ -162,6 +162,28 @@ Resources:
           FromPort: '22'
           ToPort: '22'
           CidrIp: 0.0.0.0/0
+  DBSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Permit access from Web Security Group
+      GroupName: DB Security Group
+      VpcId: !ref VPC
+      Tags:
+        - Key: Name
+          Value: DB Security Group
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '3306'
+          ToPort: '3306'
+          SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId      
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

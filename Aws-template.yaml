@@ -1,4 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
+Description: Proyecto Final
+Resources:
   VPC:
     Type: 'AWS::EC2::VPC'
     Properties:
@@ -6,18 +8,15 @@ AWSTemplateFormatVersion: "2010-09-09"
       Tags:
         - Key: Name
           Value: Lab VPC
-
   InternetGateway:
     Type: 'AWS::EC2::InternetGateway'
     DependsOn:
       - VPC
-
   AttachGateway:
     Type: 'AWS::EC2::VPCGatewayAttachment'
     Properties:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
-
   PublicSubnet1:
     Type: 'AWS::EC2::Subnet'
     Properties:
@@ -29,7 +28,6 @@ AWSTemplateFormatVersion: "2010-09-09"
       Tags:
         - Key: Name
           Value: Public Subnet 1
-
   PublicSubnet2:
     Type: 'AWS::EC2::Subnet'
     Properties:
@@ -41,7 +39,6 @@ AWSTemplateFormatVersion: "2010-09-09"
       Tags:
         - Key: Name
           Value: Public Subnet 2
-
   PrivateSubnet1:
     Type: 'AWS::EC2::Subnet'
     Properties:
@@ -53,7 +50,6 @@ AWSTemplateFormatVersion: "2010-09-09"
       Tags:
         - Key: Name
           Value: Private Subnet 1
-
   PrivateSubnet2:
     Type: 'AWS::EC2::Subnet'
     Properties:
@@ -65,15 +61,13 @@ AWSTemplateFormatVersion: "2010-09-09"
       Tags:
         - Key: Name
           Value: Private Subnet 2
-
   PublicRouteTable:
     Type: 'AWS::EC2::RouteTable'
     Properties:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: Public Route Table
-          
+          Value: Public Route Table        
   PublicRoute:
     Type: 'AWS::EC2::Route'
     Properties:
@@ -83,19 +77,16 @@ AWSTemplateFormatVersion: "2010-09-09"
     DependsOn:
       - VPC
       - AttachGateway
-
   PublicSubnet1RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       SubnetId: !Ref PublicSubnet1
       RouteTableId: !Ref PublicRouteTable
-
   PublicSubnet2RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       SubnetId: !Ref PublicSubnet2
       RouteTableId: !Ref PublicRouteTable
-
   PrivateRouteTable:
     Type: 'AWS::EC2::RouteTable'
     Properties:
@@ -103,19 +94,16 @@ AWSTemplateFormatVersion: "2010-09-09"
       Tags:
         - Key: Name
           Value: Private Route Table
-
   PrivateSubnet1RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       SubnetId: !Ref PrivateSubnet1
       RouteTableId: !Ref PrivateRouteTable
-
   PrivateSubnet2RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       SubnetId: !Ref PrivateSubnet2
       RouteTableId: !Ref PrivateRouteTable
-
   WebInstance:
     Type: 'AWS::EC2::Instance'
     Properties:
@@ -145,7 +133,6 @@ AWSTemplateFormatVersion: "2010-09-09"
           wget https://aws-tc-largeobjects.s3.amazonaws.com/CUR-TF-100-ACCLFO-2/lab5-rds/lab-app-php7.zip
           unzip lab-app-php7.zip -d /var/www/html/
           chown apache:root /var/www/html/rds.conf.php
-
   WebSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -164,9 +151,6 @@ AWSTemplateFormatVersion: "2010-09-09"
           FromPort: '22'
           ToPort: '22'
           CidrIp: 0.0.0.0/0
-
-  # NAT Gateway
-
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:
@@ -174,12 +158,10 @@ AWSTemplateFormatVersion: "2010-09-09"
       AllocationId: !GetAtt
         - NATGatewayEIP
         - AllocationId
-
   NATGatewayEIP:
     Type: AWS::EC2::EIP
     Properties:
       Domain: vpc
-
   NATGatewayRoute:
     Type: AWS::EC2::Route
     Properties:
@@ -188,7 +170,6 @@ AWSTemplateFormatVersion: "2010-09-09"
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId:
         Ref: NATGateway
-
 Outputs:
   WebServer:
     Value: !GetAtt

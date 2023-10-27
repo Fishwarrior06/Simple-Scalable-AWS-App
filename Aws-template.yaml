@@ -203,7 +203,7 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId:
         Ref: NATGateway
-  RDSDBInstance:
+  DBInstance:
     Type: "AWS::RDS::DBInstance"
     Properties:
       AllocatedStorage: 20

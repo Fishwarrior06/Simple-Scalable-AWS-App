@@ -23,10 +23,10 @@ Resources:
             GroupDescription: Lab-security-group-description
             GroupName: Lab-security-group
             SecurityGroupIngress: 
-                - IpProtocol: tcp
-                FromPort: 80
-                ToPort: 80
-                CidrIp: "0.0.0.0/0"
+            - IpProtocol: tcp
+            FromPort: 80
+            ToPort: 80
+            CidrIp: "0.0.0.0/0"
             VpcId: !ref VPC
     VPC:
         Type: 'AWS::EC2::VPC'

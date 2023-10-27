@@ -6,7 +6,8 @@ Parameters:
     Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64'
   KeyName:
     Description: Name of an existing EC2 KeyPair
-    Type: String  
+    Type: String 
+  AmazonLinuxAMIID: ami-067d1e60475437da2
 Resources:
   VPC:
     Type: 'AWS::EC2::VPC'

@@ -4,10 +4,12 @@ Parameters:
   LatestAmiId:
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64'
+    Type: String
   KeyName:
     Description: Name of an existing EC2 KeyPair
     Type: String 
   AmazonLinuxAMIID: ami-067d1e60475437da2
+    Type: String
 Resources:
   VPC:
     Type: 'AWS::EC2::VPC'

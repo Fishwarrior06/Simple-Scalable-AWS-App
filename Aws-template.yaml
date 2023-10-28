@@ -185,7 +185,7 @@ Resources:
           ToPort: '3306'
           SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId 
   CreateDBInstance:
-    Type: AWS:RDS::DBInstance
+    Type: AWS::RDS::DBInstance
     Properties:
       AutoMinorVersionUpgrade: true
   MyDBCluster:
@@ -197,6 +197,7 @@ Resources:
       MasterUserPassword: lab-password
       StorageEncrypted: false
       DatabaseName: Final
+      StorageType: Aurora Standard
       VpcSecurityGroupIds: 
         - !Ref VPC
   MyDBInstance:
@@ -205,8 +206,6 @@ Resources:
       DBInstanceIdentifier: final-db-instance
       DBClusterIdentifier: !Ref MyDBCluster
       DBInstanceClass: db.t3.medium
-  ModifyDBCluster:
-    StorageType: Aurora Standard
   CreateDBClusterEndpoint:
     DBClusterIdentifier: final-db        
   NATGateway:

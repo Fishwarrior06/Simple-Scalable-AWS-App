@@ -152,21 +152,6 @@ Resources:
           wget https://aws-tc-largeobjects.s3.amazonaws.com/CUR-TF-100-ACCLFO-2/lab5-rds/lab-app-php7.zip
           unzip lab-app-php7.zip -d /var/www/html/
           chown apache:root /var/www/html/rds.conf.php
-  AuroraCluster:
-    Type: AWS::RDS::DBCluster
-    Properties:
-      Engine: aurora-mysql
-      DBInstanceClass: db.t3.medium
-      DBClusterIdentifier: lab-aurora-cluster
-      DatabaseName: lab
-      MasterUsername: main
-      MasterPassword: lab-password
-      DBSubnetGroupName: !Ref RDSSubnetGroup
-      AuroraSecurityGroup: Ref AuroraSecurityGroup
-    DependsOn:
-      - VPC
-      - InternetGateway
-      - AttachGateway
   AuroraSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -184,6 +169,21 @@ Resources:
       FromPort: 3306
       ToPort: 3306
       SourceSecurityGroupId: !Ref AuroraSecurityGroup.GroupId
+  AuroraCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      Engine: aurora-mysql
+      DBInstanceClass: db.t3.medium
+      DBClusterIdentifier: lab-aurora-cluster
+      DatabaseName: lab
+      MasterUsername: main
+      MasterPassword: lab-password
+      DBSubnetGroupName: !Ref RDSSubnetGroup
+      AuroraSecurityGroup: Ref AuroraSecurityGroup
+    DependsOn:
+      - VPC
+      - InternetGateway
+      - AttachGateway
   WebSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:

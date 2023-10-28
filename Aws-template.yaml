@@ -185,7 +185,6 @@ Resources:
           ToPort: '3306'
           SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId
   CreateDBCluster:
-    StorageType: Standard
     Port: 3306
     DBClusterIdentifier: Final-DB
     DBInstanceClass: db.t3.medium

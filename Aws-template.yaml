@@ -196,11 +196,11 @@ Resources:
       Port: 3306
       DBInstanceClass: db.t3.medium
       StorageEncrypted: false
-      StorageType: Aurora Standard
+      StorageType: Aurora
       DatabaseName: Final
       MasterUserPassword: lab-password
       MasterUsername: main
-      VpcSecurityGroupIds: !Ref VPC       
+      VpcSecurityGroupIds: !Ref DBSecurityGroup       
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

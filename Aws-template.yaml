@@ -159,7 +159,7 @@ Resources:
       IpProtocol: tcp
       FromPort: 3306
       ToPort: 3306
-      SourceSecurityGroupId: !Ref AuroraSecurityGroup.GroupId
+      SourceSecurityGroupId: !Ref WebSecurityGroup
   NATGatewayRoute:
     Type: AWS::EC2::Route
     Properties:

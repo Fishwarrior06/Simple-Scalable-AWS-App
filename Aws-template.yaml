@@ -166,15 +166,6 @@ Resources:
       - VPC
       - InternetGateway
       - AttachGateway
-  AuroraSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Permit access from Web Security Group
-      GroupName: Aurora Security Group
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: Aurora Security Group
   AuroraSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
@@ -182,7 +173,7 @@ Resources:
       IpProtocol: tcp
       FromPort: 3306
       ToPort: 3306
-      SourceSecurityGroupId: !GetAtt AuroraSecurityGroup.GroupId
+      SourceSecurityGroupId: !GetAtt DBSecurityGroup.GroupId
   WebSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:

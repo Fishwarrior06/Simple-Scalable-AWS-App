@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  DBInstanceIdentifier:
+    Type: String
+    Description: The identifier for the Aurora DB cluster.
+    Default: lab-db
+  MasterUsername:
+    Type: String
+    Description: The master username for the Aurora DB cluster.
+    Default: main
+  MasterPassword:
+    Type: String
+    Description: The master password for the Aurora DB cluster.
+    Default: lab-password
+  DBInstanceClass:
+    Type: String
+    Description: The DB instance class for the Aurora DB cluster.
+    Default: db.t3.micro
+  AllocatedStorage:
+    Type: Number
+    Description: The allocated storage in GB for the Aurora DB cluster.
+    Default: 20
+  VPCSecurityGroupID:
+    Type: String
+    Description: The VPC security group ID for the Aurora DB cluster.
+
+Resources:
+  DBCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      DatabaseName: lab
+      Engine: aurora-mysql
+      EngineMode: provisioned
+      EngineVersion: 8.0.23
+      MasterUsername: !Ref MasterUsername
+      MasterPassword: !Ref MasterPassword
+      DBInstanceClass: !Ref DBInstanceClass
+      AllocatedStorage: !Ref AllocatedStorage
+      VPCEnabled: true
+      VPCSecurityGroups:
+        - !Ref VPCSecurityGroupID
+      EnableIAMDatabaseAuthentication: true
+      BackupRetentionPeriod: 0
+      EnablePerformanceInsights: false
+      EnableEnhancedMonitoring: false

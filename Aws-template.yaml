@@ -188,6 +188,7 @@ Resources:
     Type: AWS::RDS::DBInstance
     Properties:
       DBClusterIdentifier: final-db
+      Engine: aurora
       AutoMinorVersionUpgrade: true 
   CreateDBCluster:
     Type: AWS::RDS::DBCluster
@@ -195,7 +196,6 @@ Resources:
       Port: 3306
       DBInstanceClass: db.t3.medium
       StorageEncrypted: false
-      Engine: aurora-mysql
       StorageType: Aurora Standard
       DatabaseName: Final
       MasterUserPassword: lab-password

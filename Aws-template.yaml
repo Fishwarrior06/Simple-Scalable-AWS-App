@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: "2023-09-01"
+AWSTemplateFormatVersion: "2010-09-09"
 Description: Proyecto Final
 Parameters:
   LatestAmiId:
@@ -114,9 +114,9 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId:
         Ref: NATGateway
-    DependsOn:
-      - NATGateway
-      - RDSDBInstance
+  DependsOn:
+    - NATGateway
+    - RDSDBInstance
   RDSSubnetGroup:
     Type: "AWS::RDS::DBSubnetGroup"
     Properties:

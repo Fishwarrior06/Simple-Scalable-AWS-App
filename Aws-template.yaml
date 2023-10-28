@@ -193,6 +193,7 @@ Resources:
       Engine: aurora-mysql
       StorageEncrypted: false
       StorageType: aurora
+      DatabaseName: final
       MasterUserPassword: lab-password
       MasterUsername: main
       VpcSecurityGroupIds: 
@@ -205,8 +206,13 @@ Resources:
       Engine: aurora-mysql     
       AutoMinorVersionUpgrade: false
       DBClusterIdentifier: !Ref CreateDBCluster
+      DBName: final
+      VpcSecurityGroupIds: 
+      - !Ref DBSecurityGroup
       DBSubnetGroupName: !Ref DBSubnetGroup
-      DBParameterGroupName: yourDBClusterParameterGroup
+      MasterUserPassword: lab-password
+      MasterUsername: main
+      MultiAZ: true
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

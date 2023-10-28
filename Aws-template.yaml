@@ -168,7 +168,7 @@ Resources:
       IpProtocol: tcp
       FromPort: 3306
       ToPort: 3306
-      SourceSecurityGroupId: !Ref WebSecurityGroup
+      SourceSecurityGroupId: !Ref WebSecurityGroup.GroupId
   NATGatewayRoute:
     Type: AWS::EC2::Route
     Properties:

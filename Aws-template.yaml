@@ -197,7 +197,7 @@ Resources:
       MasterUsername: main
       VpcSecurityGroupIds: 
       - !Ref DBSecurityGroup
-      DBName: final
+      DataBaseName: final
   CreateDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:

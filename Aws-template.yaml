@@ -188,18 +188,24 @@ Resources:
     Type: AWS:RDS::DBInstance
     Properties:
       AutoMinorVersionUpgrade: true
-  CreateDBCluster: 
-    Type: AWS::RDS:DBCluster 
+  MyDBCluster:
+    Type: AWS::RDS::DBCluster
     Properties:
-      Port: 3306
       DBClusterIdentifier: final-db
-      DBInstanceClass: db.t3.medium
-      StorageEncrypted: false
       Engine: aurora-mysql
-      DatabaseName: Final
-      MasterUserPassword: lab-password
       MasterUsername: main
-      VpcSecurityGroupIds: !Ref VPC
+      MasterUserPassword: lab-password
+      StorageEncrypted: false
+      DatabaseName: Final
+      VpcSecurityGroupIds: 
+        - !Ref VPC
+  MyDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: final-db-instance
+      DBClusterIdentifier: !Ref MyDBCluster
+      DBInstanceClass: db.t3.medium
+      Port: 3306
   ModifyDBCluster:
     StorageType: Aurora Standard
   CreateDBClusterEndpoint:

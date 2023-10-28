@@ -12,6 +12,17 @@ Parameters:
     Type: String
     Default: ami-067d1e60475437da2
 Resources:
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      AllocationId: !GetAtt
+        - NATGatewayEIP
+        - AllocationId
+  NATGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
   VPC:
     Type: 'AWS::EC2::VPC'
     Properties:
@@ -230,17 +241,6 @@ Resources:
           FromPort: '3306'
           ToPort: '3306'
           SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId            
-  NATGateway:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      SubnetId: !Ref PublicSubnet1
-      AllocationId: !GetAtt
-        - NATGatewayEIP
-        - AllocationId
-  NATGatewayEIP:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
 Outputs:
   WebServer:
     Value: !GetAtt

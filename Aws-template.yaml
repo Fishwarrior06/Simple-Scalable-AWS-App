@@ -191,8 +191,9 @@ Resources:
       DBClusterIdentifier: lab-db
       DBSubnetGroupName: !Ref DBSubnetGroup
       Engine: aurora-mysql
+      DBInstanceClass: db.t3.medium
       StorageEncrypted: false
-      StorageType: aurora
+      StorageType: aurora standard
       DatabaseName: final-db
       MasterUserPassword: lab-password
       MasterUsername: main

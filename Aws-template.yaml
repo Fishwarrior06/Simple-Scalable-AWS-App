@@ -166,6 +166,23 @@ Resources:
       - VPC
       - InternetGateway
       - AttachGateway
+    AuroraSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Permit access from Web Security Group
+      GroupName: Aurora Security Group
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: Aurora Security Group  
+  AuroraSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref WebSecurityGroup
+      IpProtocol: tcp
+      FromPort: 3306
+      ToPort: 3306
+      SourceSecurityGroupId: !Ref AuroraSecurityGroup.GroupId
   WebSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -184,6 +201,12 @@ Resources:
           FromPort: '22'
           ToPort: '22'
           CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0
+          SourceSecurityGroupId: !Ref AuroraSecurityGroup.GroupId
   DBSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -197,7 +220,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: '3306'
           ToPort: '3306'
-          SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId      
+          SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId            
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

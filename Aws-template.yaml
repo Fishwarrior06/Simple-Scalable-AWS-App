@@ -198,7 +198,7 @@ Resources:
       DatabaseName: Final
       StorageType: Aurora Standard
       VpcSecurityGroupIds: 
-        - !Ref VPC
+        - !Ref DBSecurityGroup
   MyDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:

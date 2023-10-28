@@ -193,7 +193,7 @@ Resources:
       Engine: aurora-mysql
       StorageEncrypted: false
       StorageType: aurora
-      DatabaseName: hector
+      DatabaseName: jair
       MasterUserPassword: lab-password
       MasterUsername: main
       VpcSecurityGroupIds: 

@@ -170,14 +170,6 @@ Resources:
       Tags:
         - Key: Name
           Value: Aurora Security Group  
-  AuroraSecurityGroupIngress:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      GroupId: !Ref WebSecurityGroup
-      IpProtocol: tcp
-      FromPort: 3306
-      ToPort: 3306
-      SourceSecurityGroupId: !Ref AuroraSecurityGroup.GroupId
   AuroraCluster:
     Type: AWS::RDS::DBCluster
     Properties:
@@ -193,6 +185,14 @@ Resources:
       - VPC
       - InternetGateway
       - AttachGateway
+  AuroraSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref WebSecurityGroup
+      IpProtocol: tcp
+      FromPort: 3306
+      ToPort: 3306
+      SourceSecurityGroupId: !Ref AuroraSecurityGroup.GroupId
   WebSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:

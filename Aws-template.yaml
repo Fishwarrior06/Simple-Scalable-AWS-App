@@ -197,10 +197,10 @@ Resources:
       MasterUsername: main
       VpcSecurityGroupIds: 
       - !Ref DBSecurityGroup
-      DataBaseName: final
   CreateDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
+      DataBaseName: final
       DBInstanceClass: db.t3.medium
       DBInstanceIdentifier: mydbinstance 
       Engine: aurora-mysql     

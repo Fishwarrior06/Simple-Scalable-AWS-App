@@ -184,7 +184,10 @@ Resources:
           FromPort: '3306'
           ToPort: '3306'
           SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId
+  CreateDBInstance:
+    AutoMinorVersionUpgrade: Enable
   CreateDBCluster: 
+    Port: 3306
     DBClusterIdentifier: Final-DB
     DBInstanceClass: db.t3.medium
     StorageEncrypted: false

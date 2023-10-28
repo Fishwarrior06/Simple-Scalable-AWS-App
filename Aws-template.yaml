@@ -207,8 +207,6 @@ Resources:
       AutoMinorVersionUpgrade: false
       DBClusterIdentifier: !Ref CreateDBCluster
       DBName: final
-      VpcSecurityGroupIds: 
-      - !Ref DBSecurityGroup
       DBSubnetGroupName: !Ref DBSubnetGroup
       MasterUserPassword: lab-password
       MasterUsername: main

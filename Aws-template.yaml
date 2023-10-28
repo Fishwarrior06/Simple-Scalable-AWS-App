@@ -72,10 +72,10 @@ Resources:
       Tags:
         - Key: Name
           Value: Private Subnet 2
-  RDSSubnetGroup:
+  DBSubnetGroup:
     Type: "AWS::RDS::DBSubnetGroup"
     Properties:
-      DBSubnetGroupName: DB-Subnet-Group
+      DBSubnetGroupName: DBSubnetGroup
       DBSubnetGroupDescription: DB Subnet Group
       SubnetIds:
         - !Ref PrivateSubnet1
@@ -189,7 +189,7 @@ Resources:
     Properties:
       Port: 3306
       DBClusterIdentifier: lab-db
-      RDSSubnetGroupName: !Ref RDSSubnetGroup
+      DBSubnetGroupName: !Ref DBSubnetGroup
       Engine: aurora-mysql
       StorageEncrypted: false
       StorageType: aurora

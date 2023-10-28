@@ -191,12 +191,12 @@ Resources:
   MyDBCluster:
     Type: AWS::RDS::DBCluster
     Properties:
-      DBClusterIdentifier: final-db
       Engine: aurora-mysql
       MasterUsername: main
       MasterUserPassword: lab-password
       StorageEncrypted: false
       DatabaseName: Final
+      StorageType: Aurora Standard
       VpcSecurityGroupIds: 
         - !Ref VPC
   MyDBInstance:

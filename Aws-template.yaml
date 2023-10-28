@@ -140,7 +140,7 @@ Resources:
         - Key: Name
           Value: Web Server 1
       UserData:
-        Fn::Base64: |
+        Fn::Base64: !Sub |
           #!/bin/bash -ex
           # Updated to use Amazon Linux 2023
           dnf update -y
@@ -152,46 +152,6 @@ Resources:
           wget https://aws-tc-largeobjects.s3.amazonaws.com/CUR-TF-100-ACCLFO-2/lab5-rds/lab-app-php7.zip
           unzip lab-app-php7.zip -d /var/www/html/
           chown apache:root /var/www/html/rds.conf.php
-  AuroraSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Permit access from Web Security Group
-      GroupName: Aurora Security Group
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: Aurora Security Group  
-  AuroraSecurityGroupIngress:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      GroupId: !Ref WebSecurityGroup
-      IpProtocol: tcp
-      FromPort: 3306
-      ToPort: 3306
-      SourceSecurityGroupId: !Ref WebSecurityGroup.GroupId
-  NATGatewayRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId:
-        !Ref: PrivateRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId:
-        !Ref: NATGateway
-  AuroraCluster:
-    Type: AWS::RDS::DBCluster
-    Properties:
-      Engine: aurora-mysql
-      DBInstanceClass: db.t3.medium
-      DBClusterIdentifier: lab-aurora-cluster
-      DatabaseName: lab
-      MasterUsername: main
-      MasterPassword: lab-password
-      DBSubnetGroupName: !Ref RDSSubnetGroup
-      AuroraSecurityGroup: !Ref AuroraSecurityGroup
-    DependsOn:
-      - VPC
-      - InternetGateway
-      - AttachGateway
   WebSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -210,12 +170,6 @@ Resources:
           FromPort: '22'
           ToPort: '22'
           CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 0
-          ToPort: 65535
-          CidrIp: 0.0.0.0/0
-          SourceSecurityGroupId: !Ref AuroraSecurityGroup.GroupId
   DBSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -229,7 +183,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: '3306'
           ToPort: '3306'
-          SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId            
+          SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId      
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:
@@ -241,12 +195,17 @@ Resources:
     Type: AWS::EC2::EIP
     Properties:
       Domain: vpc
+  NATGatewayRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: NATGateway
 Outputs:
   WebServer:
     Value: !GetAtt
       - WebInstance
       - PublicIp
     Description: Public IP address of Web Server
-  AuroraDBEndpoint:
-    Value: !Ref AuroraDBCluster.Endpoint
-    Description: Public IP address of Aurora DB Cluster

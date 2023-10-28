@@ -206,7 +206,7 @@ Resources:
       Engine: aurora-mysql     
       AutoMinorVersionUpgrade: false
       DBName: final
-      DBSubnetGroupName: !Ref DBSubnetGroup
+      DBSubnetGroupName: mydbsubnetgroup
       MasterUserPassword: lab-password
       MasterUsername: main
       MultiAZ: true

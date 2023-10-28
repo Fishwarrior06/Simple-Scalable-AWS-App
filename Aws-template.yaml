@@ -123,15 +123,6 @@ Resources:
     Properties:
       SubnetId: !Ref PrivateSubnet2
       RouteTableId: !Ref PrivateRouteTable
-  NATGatewayRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId:
-        !Ref: PrivateRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId:
-        !Ref: NATGateway
-
   WebInstance:
     Type: 'AWS::EC2::Instance'
     Properties:
@@ -238,6 +229,14 @@ Resources:
       AllocationId: !GetAtt
         - NATGatewayEIP
         - AllocationId
+  NATGatewayRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        !Ref: PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        !Ref: NATGateway
   NATGatewayEIP:
     Type: AWS::EC2::EIP
     Properties:

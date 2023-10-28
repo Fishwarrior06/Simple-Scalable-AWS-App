@@ -187,11 +187,11 @@ Resources:
   CreateDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
+      DBClusterIdentifier: final-db
       AutoMinorVersionUpgrade: true 
   CreateDBCluster:
     Type: AWS::RDS::DBCluster
-    Properties:
-      DBClusterIdentifier: final-db 
+    Properties: 
       Port: 3306
       DBInstanceClass: db.t3.medium
       StorageEncrypted: false

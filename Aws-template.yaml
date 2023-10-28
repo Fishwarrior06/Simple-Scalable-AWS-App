@@ -201,8 +201,16 @@ Resources:
   CreateDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
-      Engine: aurora-mysql
-      DBInstanceClass: db.t3.medium      
+      DBInstanceClass: db.t3.medium
+      DBInstanceIdentifier: mydbinstance 
+      Engine: aurora-mysql     
+      AutoMinorVersionUpgrade: false
+      DBName: final
+      DBSubnetGroupName: 
+      - !Ref DBSubnetGroup
+      MasterUserPassword: lab-password
+      MasterUsername: main
+      MultiAZ: true
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

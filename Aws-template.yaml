@@ -185,7 +185,7 @@ Resources:
           ToPort: '3306'
           SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId
   CreateDBInstance:
-    AutoMinorVersionUpgrade: Enable
+    AutoMinorVersionUpgrade: 
   CreateDBCluster: 
     Port: 3306
     DBClusterIdentifier: final-db

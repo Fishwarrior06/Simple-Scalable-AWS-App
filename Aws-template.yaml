@@ -183,7 +183,18 @@ Resources:
         - IpProtocol: tcp
           FromPort: '3306'
           ToPort: '3306'
-          SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId      
+          SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId
+  CreateDBCluster:
+    StorageType: Standard
+    Port: 3306
+    DBClusterIdentifier: Final-DB
+    DBInstanceClass: db.t3.medium
+    StorageEncrypted: false
+    Engine: aurora-mysql
+    DatabaseName: Final
+    MasterUserPassword: lab-password
+    MasterUsername: main
+    VpcSecurityGroupIds: !Ref VPC        
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

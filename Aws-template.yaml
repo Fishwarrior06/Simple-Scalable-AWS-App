@@ -162,11 +162,12 @@ Resources:
       MasterUsername: main
       MasterPassword: lab-password
       DBSubnetGroupName: !Ref RDSSubnetGroup
+      AuroraSecurityGroup: Ref AuroraSecurityGroup
     DependsOn:
       - VPC
       - InternetGateway
       - AttachGateway
-    AuroraSecurityGroup:
+  AuroraSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Permit access from Web Security Group

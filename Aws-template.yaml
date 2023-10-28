@@ -179,7 +179,7 @@ Resources:
       MasterUsername: main
       MasterPassword: lab-password
       DBSubnetGroupName: !Ref RDSSubnetGroup
-      AuroraSecurityGroup: Ref AuroraSecurityGroup
+      AuroraSecurityGroup: !Ref AuroraSecurityGroup
     DependsOn:
       - VPC
       - InternetGateway
@@ -237,10 +237,10 @@ Resources:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId:
-        Ref: PrivateRouteTable
+        !Ref: PrivateRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId:
-        Ref: NATGateway
+        !Ref: NATGateway
 Outputs:
   WebServer:
     Value: !GetAtt

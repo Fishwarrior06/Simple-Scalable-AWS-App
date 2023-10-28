@@ -200,13 +200,13 @@ Resources:
   CreateDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
-      DataBaseName: final
       DBInstanceClass: db.t3.medium
       DBInstanceIdentifier: mydbinstance 
       Engine: aurora-mysql     
       AutoMinorVersionUpgrade: false
       DBClusterIdentifier: !Ref CreateDBCluster
       DBSubnetGroupName: !Ref DBSubnetGroup
+      DBParameterGroupName: yourDBClusterParameterGroup
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

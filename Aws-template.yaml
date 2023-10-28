@@ -80,6 +80,26 @@ Resources:
       SubnetIds:
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
+    RDSInstance:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      AllocatedStorage: 20
+      AutoMinorVersionUpgrade: true
+      AvailabilityZone: us-east-1a  # Replace with your desired Availability Zone
+      BackupRetentionPeriod: 0
+      CopyTagsToSnapshot: false
+      DBInstanceClass: db.t3.micro
+      DBInstanceIdentifier: lab-db
+      DBName: lab
+      Engine: mysql
+      MasterUsername: main
+      MasterUserPassword: lab-password
+      MultiAZ: true
+      PubliclyAccessible: false
+      StorageType: gp2
+      VPCSecurityGroups:
+        - !GetAtt DBSecurityGroup.GroupId  # Refer to the DB Security Group
+      DBSubnetGroupName: !Ref RDSSubnetGroup  # Reference to the RDS subnet group
   PublicRouteTable:
     Type: 'AWS::EC2::RouteTable'
     Properties:

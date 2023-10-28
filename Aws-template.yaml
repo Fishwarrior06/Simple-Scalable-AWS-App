@@ -184,8 +184,7 @@ Resources:
           FromPort: '3306'
           ToPort: '3306'
           SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId
-  CreateDBCluster:
-    StorageType: Aurora Standard
+  CreateDBCluster: 
     Port: 3306
     DBClusterIdentifier: Final-DB
     DBInstanceClass: db.t3.medium
@@ -194,7 +193,9 @@ Resources:
     DatabaseName: Final
     MasterUserPassword: lab-password
     MasterUsername: main
-    VpcSecurityGroupIds: !Ref VPC        
+    VpcSecurityGroupIds: !Ref VPC
+  ModifyDBCluster:
+    StorageType: Aurora Standard        
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

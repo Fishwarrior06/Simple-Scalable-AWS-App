@@ -189,7 +189,6 @@ Resources:
     AutoMinorVersionUpgrade: yes
   CreateDBCluster: 
     Port: 3306
-    DBClusterIdentifier: final-db
     DBInstanceClass: db.t3.medium
     StorageEncrypted: false
     Engine: aurora-mysql

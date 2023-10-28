@@ -205,8 +205,11 @@ Resources:
       DBInstanceIdentifier: mydbinstance 
       Engine: aurora-mysql     
       AutoMinorVersionUpgrade: false
+      DBClusterIdentifier: !Ref CreateDBCluster
       DBName: final
-      DBSubnetGroupName: mydbsubnetgroup
+      VpcSecurityGroupIds: 
+      - !Ref DBSecurityGroup
+      DBSubnetGroupName: !Ref DBSubnetGroup
       MasterUserPassword: lab-password
       MasterUsername: main
       MultiAZ: true

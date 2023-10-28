@@ -196,12 +196,11 @@ Resources:
       DBInstanceClass: db.t3.medium
       StorageEncrypted: false
       Engine: aurora-mysql
+      StorageType: Aurora Standard
       DatabaseName: Final
       MasterUserPassword: lab-password
       MasterUsername: main
-      VpcSecurityGroupIds: !Ref VPC
-  ModifyDBCluster:
-    StorageType: Aurora Standard        
+      VpcSecurityGroupIds: !Ref VPC       
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

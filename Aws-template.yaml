@@ -205,7 +205,6 @@ Resources:
       DBInstanceIdentifier: final-db-instance
       DBClusterIdentifier: !Ref MyDBCluster
       DBInstanceClass: db.t3.medium
-      Port: 3306
   ModifyDBCluster:
     StorageType: Aurora Standard
   CreateDBClusterEndpoint:

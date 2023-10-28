@@ -1,0 +1,23 @@
+{
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "ec2:AssociateRouteTable",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:CreateRouteTable",
+          "ec2:CreateSubnet",
+          "ec2:CreateSecurityGroup",
+          "ec2:DescribeInstances",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DescribeRouteTables",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeSubnets",
+          "ec2:ModifyNetworkInterfaceAttribute",
+          "ec2:RevokeSecurityGroupEgress"
+        ],
+        "Resource" : "*"
+      }
+    ]
+  }  

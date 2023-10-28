@@ -189,7 +189,7 @@ Resources:
     Properties:
       Port: 3306
       DBClusterIdentifier: lab-db
-      DBSubnetGroupName: !Ref DBsubnetGroup
+      DBSubnetGroupName: !Ref RDSSubnetGroup
       Engine: aurora-mysql
       StorageEncrypted: false
       StorageType: aurora

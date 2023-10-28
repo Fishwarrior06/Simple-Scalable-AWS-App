@@ -193,7 +193,7 @@ Resources:
       Engine: aurora-mysql
       StorageEncrypted: false
       StorageType: aurora
-      DatabaseName: jair
+      DatabaseName: final-db
       MasterUserPassword: lab-password
       MasterUsername: main
       VpcSecurityGroupIds: 

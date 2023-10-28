@@ -210,7 +210,6 @@ Resources:
       DBSubnetGroupName: !Ref DBSubnetGroup
       MasterUserPassword: lab-password
       MasterUsername: main
-      MultiAZ: true
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

@@ -183,9 +183,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: '3306'
           ToPort: '3306'
-          SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId
-  CreateDBInstance:
-    AutoMinorVersionUpgrade: 
+          SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId 
   CreateDBCluster: 
     Port: 3306
     DBClusterIdentifier: final-db

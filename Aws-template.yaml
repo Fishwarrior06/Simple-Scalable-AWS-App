@@ -208,8 +208,6 @@ Resources:
       DBClusterIdentifier: !Ref CreateDBCluster
       DBName: final
       DBSubnetGroupName: !Ref DBSubnetGroup
-      MasterUserPassword: lab-password
-      MasterUsername: main
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

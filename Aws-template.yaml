@@ -185,7 +185,9 @@ Resources:
           ToPort: '3306'
           SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId 
   CreateDBInstance:
-    AutoMinorVersionUpgrade: yes
+    Type: AWS:RDS::DBInstance
+    Properties:
+      AutoMinorVersionUpgrade: true
   CreateDBCluster: 
     Port: 3306
     DBClusterIdentifier: final-db

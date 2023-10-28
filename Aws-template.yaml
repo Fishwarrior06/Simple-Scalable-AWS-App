@@ -197,7 +197,11 @@ Resources:
       MasterUserPassword: lab-password
       MasterUsername: main
       VpcSecurityGroupIds: 
-      - !Ref DBSecurityGroup      
+      - !Ref DBSecurityGroup
+  CreateDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: db.t3.medium      
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

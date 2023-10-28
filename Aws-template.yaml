@@ -198,9 +198,7 @@ Resources:
     MasterUsername: main
     VpcSecurityGroupIds: !Ref VPC
   ModifyDBCluster:
-    StorageType: Aurora Standard
-  CreateDBClusterEndpoint:
-    DBClusterIdentifier: final-db        
+    StorageType: Aurora Standard        
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:

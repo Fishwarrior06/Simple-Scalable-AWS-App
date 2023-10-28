@@ -188,7 +188,7 @@ Resources:
     Type: AWS::RDS::DBInstance
     Properties:
       DBClusterIdentifier: final-db
-      Engine: aurora
+      Engine: aurora-mysql
       AutoMinorVersionUpgrade: true
       IamInstanceProfile: !GetAtt DBInstanceRole.Arn 
   CreateDBCluster:

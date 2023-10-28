@@ -189,7 +189,8 @@ Resources:
     Properties:
       DBClusterIdentifier: final-db
       Engine: aurora
-      AutoMinorVersionUpgrade: true 
+      AutoMinorVersionUpgrade: true
+      IamInstanceProfile: !GetAtt DBInstanceRole.Arn 
   CreateDBCluster:
     Type: AWS::RDS::DBCluster
     Properties: 
@@ -226,3 +227,36 @@ Outputs:
       - WebInstance
       - PublicIp
     Description: Public IP address of Web Server
+DBInstanceRole:
+  Type: 'AWS::IAM::Role'
+  Properties:
+    AssumeRolePolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - ec2.amazonaws.com
+          Action:
+            - sts:AssumeRole
+    Policies:
+      - PolicyName: RDSAndEC2Permissions
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - ec2:AssociateRouteTable
+                - ec2:AuthorizeSecurityGroupEgress
+                - ec2:AuthorizeSecurityGroupIngress
+                - ec2:CreateRouteTable
+                - ec2:CreateSubnet
+                - ec2:CreateSecurityGroup
+                - ec2:DescribeInstances
+                - ec2:DescribeNetworkInterfaces
+                - ec2:DescribeRouteTables
+                - ec2:DescribeSecurityGroups
+                - ec2:DescribeSubnets
+                - ec2:ModifyNetworkInterfaceAttribute
+                - ec2:RevokeSecurityGroupEgress
+              Resource: "*"

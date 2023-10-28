@@ -197,7 +197,6 @@ Resources:
       MasterUserPassword: lab-password
       StorageEncrypted: false
       DatabaseName: Final
-      StorageType: Aurora Standard
       VpcSecurityGroupIds: 
         - !Ref VPC
   MyDBInstance:

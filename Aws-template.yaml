@@ -72,6 +72,20 @@ Resources:
       Tags:
         - Key: Name
           Value: Private Subnet 2
+  Resources:
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      AllocationId: !GetAtt
+        - NATGatewayEIP
+        - AllocationId
+
+  NATGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
   RDSDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
@@ -91,6 +105,18 @@ Resources:
       BackupRetentionPeriod: 0
       EncryptionEnabled: false
       EnhancedMonitoring: false
+
+  NATGatewayRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: NATGateway
+    DependsOn:
+      - NATGateway
+      - RDSDBInstance
   RDSSubnetGroup:
     Type: "AWS::RDS::DBSubnetGroup"
     Properties:
@@ -99,9 +125,6 @@ Resources:
       SubnetIds:
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
-  DependsOn:
-    - NATGateway
-    - RDSDBInstance
   PublicRouteTable:
     Type: 'AWS::EC2::RouteTable'
     Properties:

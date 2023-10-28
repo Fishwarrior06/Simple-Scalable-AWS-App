@@ -201,6 +201,7 @@ Resources:
   CreateDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
+      Engine: aurora-mysql
       DBInstanceClass: db.t3.medium      
   NATGateway:
     Type: AWS::EC2::NatGateway

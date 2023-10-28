@@ -152,6 +152,15 @@ Resources:
           wget https://aws-tc-largeobjects.s3.amazonaws.com/CUR-TF-100-ACCLFO-2/lab5-rds/lab-app-php7.zip
           unzip lab-app-php7.zip -d /var/www/html/
           chown apache:root /var/www/html/rds.conf.php
+  AuroraSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Permit access from Web Security Group
+      GroupName: Aurora Security Group
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: Aurora Security Group  
   AuroraSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
@@ -168,15 +177,6 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId:
         !Ref: NATGateway
-  AuroraSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Permit access from Web Security Group
-      GroupName: Aurora Security Group
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: Aurora Security Group  
   AuroraCluster:
     Type: AWS::RDS::DBCluster
     Properties:

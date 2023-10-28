@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: "2023-09-01"
 Description: Proyecto Final
 Parameters:
   LatestAmiId:

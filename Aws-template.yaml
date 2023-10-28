@@ -72,6 +72,25 @@ Resources:
       Tags:
         - Key: Name
           Value: Private Subnet 2
+  RDSDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: lab-db
+      Engine: Aurora-PostgreSQL
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: 20
+      StorageType: gp2
+      PubliclyAccessible: no
+      VpcSecurityGroupIds:
+        - Ref: DBSecurityGroup
+      AvailabilityZone: us-east-1a
+      MultiAZ: true
+      MasterUsername: main
+      MasterUserPassword: lab-password
+      InitialDatabaseName: lab
+      BackupRetentionPeriod: 0
+      EncryptionEnabled: false
+      EnhancedMonitoring: false
   RDSSubnetGroup:
     Type: "AWS::RDS::DBSubnetGroup"
     Properties:
@@ -80,6 +99,9 @@ Resources:
       SubnetIds:
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
+  DependsOn:
+    - NATGateway
+    - RDSDBInstance
   PublicRouteTable:
     Type: 'AWS::EC2::RouteTable'
     Properties:

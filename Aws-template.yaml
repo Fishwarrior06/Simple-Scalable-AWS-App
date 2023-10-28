@@ -185,19 +185,21 @@ Resources:
           ToPort: '3306'
           SourceSecurityGroupId: !GetAtt WebSecurityGroup.GroupId 
   CreateDBInstance:
-    Type: AWS:RDS::DBInstance
+    Type: AWS::RDS::DBInstance
     Properties:
       AutoMinorVersionUpgrade: true 
   CreateDBCluster:
-    DBClusterIdentifier: final-db 
-    Port: 3306
-    DBInstanceClass: db.t3.medium
-    StorageEncrypted: false
-    Engine: aurora-mysql
-    DatabaseName: Final
-    MasterUserPassword: lab-password
-    MasterUsername: main
-    VpcSecurityGroupIds: !Ref VPC
+    Type: AWS::RDS::DBCluster
+    Properties:
+      DBClusterIdentifier: final-db 
+      Port: 3306
+      DBInstanceClass: db.t3.medium
+      StorageEncrypted: false
+      Engine: aurora-mysql
+      DatabaseName: Final
+      MasterUserPassword: lab-password
+      MasterUsername: main
+      VpcSecurityGroupIds: !Ref VPC
   ModifyDBCluster:
     StorageType: Aurora Standard        
   NATGateway:
